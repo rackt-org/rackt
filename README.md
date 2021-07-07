@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.png" style="width: 300px" />
+  <img src="./logo.png" height="150px"/>
 </p>
 
 <h2 align="center"> An ultra small (~70 loc) React wrapper written in <a href="https://github.com/vishesh/racketscript">RacketScript</a></h2>
