@@ -1,9 +1,8 @@
-<p align="center">
-  <img src="./logo.png" height="150px"/>
-</p>
+<img src="logo.svg" align="right" height="110" />
 
-<h2 align="center"> An ultra small (~70 loc) React wrapper written in <a href="https://github.com/vishesh/racketscript">RacketScript</a></h2>
+# [Rackt](https://rackt-org.github.io) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/facebook/react/blob/main/LICENSE)
 
+### An ultra small (~70 loc) [React](https://github.com/facebook/react) wrapper written in [RacketScript](https://github.com/vishesh/racketscript)
 
 Rackt allows you to develop full-featured React web apps in RacketScript. You can use all React compatible libraries with it as well.
 
