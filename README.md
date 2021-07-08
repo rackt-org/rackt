@@ -1,6 +1,6 @@
 <img src="logo.svg" align="right" height="110" />
 
-# [Rackt](https://rackt-org.github.io) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/facebook/react/blob/main/LICENSE)
+# [Rackt](https://rackt-org.github.io) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/rackt-org/rackt/blob/master/LICENSE)
 
 > An ultra small (~70 loc) [React](https://github.com/facebook/react) wrapper written in [RacketScript](https://github.com/vishesh/racketscript)
 
