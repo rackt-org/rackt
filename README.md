@@ -6,7 +6,7 @@
 
 Rackt allows you to develop full-featured React web apps in RacketScript. You can use all React compatible libraries with it as well.
 
-## Key featrures:
+## Key featrures
 
 - 🪶 **Ultra small**. Rackt is a pretty thin wrapper for React. Just consider you use React but with RacketScript.
 - ⚡ **Super lightweight**. Compiled code takes only 6 Kb ungzipped.
