@@ -2,6 +2,7 @@
 
 (require (for-syntax racket/base syntax/parse)
          racketscript/interop
+         racket/stxparam
          racket/list)
 
 (define React ($/require/* "react"))
@@ -10,6 +11,8 @@
 (provide render
          <el
          <>
+         $props
+         define-component
          create-context
          use-state
          use-effect
@@ -71,6 +74,21 @@
      #'(<el name #:props ($/obj [x v] ...) . body)]
     [(_ name . body) #'(<el name . body)]))
 
+(define-syntax-parameter $props
+  (syntax-parser
+    [_ #'(error '$props "Warning: $props keyword cannot be used outside Rackt define-component body")]))
+
+(define-syntax define-component
+  (syntax-parser
+    [(_ name . body)
+     #'(define (name props . ..)
+         (syntax-parameterize
+             ;; $props may be used as an id, 
+             ;; or in head position where an implicit $ is inserted
+             ([$props (syntax-parser
+                        [:id #'props]
+                        [(_ . args) #'($ props . args)])])
+           . body))]))
+
 (define (render react-element node-id)
     (#js.ReactDOM.render react-element (#js*.document.getElementById node-id)))
-
