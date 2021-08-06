@@ -1,6 +1,7 @@
 #lang racketscript/base
 
-(require racketscript/interop
+(require (for-syntax racket/base syntax/parse)
+         racketscript/interop
          racket/list)
 
 (define React ($/require/* "react"))
@@ -8,6 +9,7 @@
 
 (provide render
          <el
+         <>
          create-context
          use-state
          use-effect
@@ -61,6 +63,13 @@
 
 ;; A small alias for readability
 (define <el create-element)
+
+;; a macro version of <el that tries to hide some boilerplate
+(define-syntax <>
+  (syntax-parser
+    [(_ name #:props ([x:id v] ...) . body)
+     #'(<el name #:props ($/obj [x v] ...) . body)]
+    [(_ name . body) #'(<el name . body)]))
 
 (define (render react-element node-id)
     (#js.ReactDOM.render react-element (#js*.document.getElementById node-id)))
