@@ -14,6 +14,9 @@
          $props
          define-component
          create-context
+         with-context
+         in-context
+         $ctx
          use-state
          use-effect
          use-context
@@ -88,6 +91,27 @@
              ([$props (syntax-parser
                         [:id #'props]
                         [(_ . args) #'($ props . args)])])
+           . body))]))
+
+(define-syntax with-context
+  (syntax-parser
+    [(_ ctx-name (~datum =) default-value . body)
+     #'(<> ($ ctx-name 'Provider) #:props ([value default-value]) . body)]))
+
+(define-syntax-parameter $ctx
+  (syntax-parser
+    [_ #'(error '$ctx "Warning: $ctx keyword cannot be used outside Rackt in-context body")]))
+
+(define-syntax in-context
+  (syntax-parser
+    [(_ ctx-name . body)
+     #'(let ([ctx (use-context ctx-name)])
+         (syntax-parameterize
+             ;; $ctx may be used as an id,
+             ;; or in head position where an implicit $ is inserted
+             ([$ctx (syntax-parser
+                      [:id #'ctx]
+                      [(_ . args) #'($ ctx . args)])])
            . body))]))
 
 (define (render react-element node-id)
