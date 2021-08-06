@@ -2,6 +2,7 @@
 
 (require (for-syntax racket/base
                      racket/syntax
+                     syntax/stx
                      syntax/parse)
          racketscript/interop
          racket/stxparam
@@ -24,6 +25,12 @@
          define-state
          use-effect
          use-reducer
+         with-reducer-context
+         $state
+         $action
+         in-reducer-context
+         $ctx-state
+         $ctx-dispatch
          use-callback
          use-memo
          use-ref
@@ -126,6 +133,73 @@
                       [:id #'ctx]
                       [(_ . args) #'($ ctx . args)])])
            . body))]))
+
+(define-syntax-parameter $state
+  (syntax-parser
+    [_ #'(error '$state "Warning: $state keyword cannot be used outside Rackt with-reducer-context action table")]))
+
+(define-syntax-parameter $action
+  (syntax-parser
+    [_ #'(error '$action "Warning: $action keyword cannot be used outside Rackt with-reducer-context action table")]))
+
+(begin-for-syntax
+  (define (id->str id)
+    (datum->syntax id (symbol->string (syntax->datum id)))))
+
+;; like with-context, but the given context must be a Reducer,
+;; ie, it only has two properties corresponding the Reducer "state" and "dispatch"
+(define-syntax with-reducer-context
+  (syntax-parser
+    [(_ ctx-name #:init init-state #:actions ([action-type:id e] ...) . body)
+     #:with (action-str ...) (stx-map id->str #'(action-type ...))
+     #`(begin
+         (define-values (_store _dispatch)
+           (use-reducer
+            (lambda (state action)
+              (syntax-parameterize
+                  ;; $state and $action may be used as ids,
+                  ;; or in head position where an implicit $ is inserted
+                  ([$state (syntax-parser
+                             [:id #'state]
+                             [(_ . args) #'($ state . args)])]
+                   [$action (syntax-parser
+                              [:id #'action]
+                              [(_ . args) #'($ action . args)])])
+                (cond [(eq? ($ action 'type) action-str) e] ... [else state])))
+            init-state))
+         (with-context ctx-name = ($/obj [store _store] [dispatch _dispatch]) . body))]))
+
+(define-syntax-parameter $ctx-state
+  (syntax-parser
+    [_ #'(error '$ctx-state "Warning: $ctx-state keyword cannot be used outside Rackt in-reducer-context body")]))
+
+(define-syntax-parameter $ctx-dispatch
+  (syntax-parser
+    [_ #'(error '$ctx-dispatch "Warning: $ctx-dispatch keyword cannot be used outside Rackt in-reducer-context body")]))
+
+;; like in-context, but the given context must be a Reducer,
+;; ie, it only has two properties corresponding the Reducer "state" and "dispatch".
+;; There are implicitly bound to $ctx-state and $ctx-dispatch, respectively
+(define-syntax in-reducer-context
+  (syntax-parser
+    [(_ ctx-name . body)
+     #'(begin
+         (in-context ctx-name
+           (let ([store ($ctx 'store)]
+                 [dispatch ($ctx 'dispatch)])
+             (syntax-parameterize
+                 ;; $store and $dispatch may be used as ids,
+                 ;; or in head position where an implicit $ is inserted
+                 ([$ctx-state (syntax-parser
+                                [:id #'store]
+                                [(_ . args) #'($ store . args)])]
+                  [$ctx-dispatch
+                   (syntax-parser
+                     [:id #'dispatch]
+                     [(_ obj) #'(dispatch obj)] ; given explicit obj
+                     [(_ action-type:id . props+vals)
+                      #`(dispatch ($/obj [type #,(id->str #'action-type)] . props+vals))])])
+               . body))))]))
 
 (define (render react-element node-id)
     (#js.ReactDOM.render react-element (#js*.document.getElementById node-id)))
