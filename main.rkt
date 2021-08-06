@@ -1,6 +1,8 @@
 #lang racketscript/base
 
-(require (for-syntax racket/base syntax/parse)
+(require (for-syntax racket/base
+                     racket/syntax
+                     syntax/parse)
          racketscript/interop
          racket/stxparam
          racket/list)
@@ -15,11 +17,12 @@
          define-component
          create-context
          with-context
+         use-context
          in-context
          $ctx
          use-state
+         define-state
          use-effect
-         use-context
          use-reducer
          use-callback
          use-memo
@@ -31,6 +34,16 @@
 ;; Basic hooks
 (define (use-state default-state)
     (apply values (js-array->list (#js.React.useState default-state))))
+
+;; (define-state name val) is shorthand for creating a React State Hook
+;; It defines two identifiers:
+;; - name: the current value of the state
+;; - set-name!: a setter used to change the state's value
+(define-syntax define-state
+  (syntax-parser
+    [(_ name default-val)
+     #:with set-name! (format-id #'name "set-~a!" #'name)
+     #'(define-values (name set-name!) (use-state default-val))]))
 
 (define use-effect #js.React.useEffect)
 
