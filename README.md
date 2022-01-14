@@ -2,7 +2,7 @@
 
 # [Rackt](https://rackt-org.github.io) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/rackt-org/rackt/blob/master/LICENSE)
 
-> An ultra small (~70 loc) [React](https://github.com/facebook/react) wrapper written in [RacketScript](https://github.com/vishesh/racketscript)
+> An ultra small (~70 loc) [React](https://github.com/facebook/react) wrapper written in [RacketScript](https://github.com/racketscript/racketscript)
 
 Rackt allows you to develop full-featured React web apps in RacketScript. You can use all React compatible libraries with it as well.
 
